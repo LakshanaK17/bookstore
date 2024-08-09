@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 
 interface CartItem {
   id: string;
@@ -10,15 +10,16 @@ interface CartItem {
 
 let cart: CartItem[] = [];
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === "POST") {
-    const { item }: { item: CartItem } = req.body;
 
-    cart.push(item);
+export async function POST(req: NextRequest) {
+  const { item }: { item: CartItem } = await req.json();
 
-    res.status(200).json({ message: "Item added to cart", cart });
-  } else {
-    res.setHeader("Allow", ["POST"]);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
-  }
+  cart.push(item);
+
+  return NextResponse.json({ message: "Item added to cart", cart });
+}
+
+
+export async function GET(req: NextRequest) {
+  return NextResponse.json({ cart });
 }
